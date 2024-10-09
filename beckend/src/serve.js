@@ -1,19 +1,19 @@
-// backend/server.js
+// server.js
 const express = require('express');
 const cors = require('cors');
-const gastosRoutes = require('./routes/gastos');
+const gastosRoutes = require('./routes/gastos'); // Ajuste o caminho conforme necessário
 
 const app = express();
-require('./utils/cron'); // Adicione esta linha
-
-// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Para analisar JSON no corpo das requisições
 
-// Rotas
+// Integrar as rotas
 app.use('/api', gastosRoutes);
 
+// Configurar a porta do servidor
+const PORT = process.env.PORT || 3001;
 
-app.listen(3001, () => {
-  console.log('Servidor rodando na porta 3001');
+// Iniciar o servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
