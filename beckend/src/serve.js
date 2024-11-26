@@ -2,7 +2,8 @@
 const express = require('express');
 const cors = require('cors');
 const gastosRoutes = require('./routes/gastos');
-const carneRoutes = require('./routes/carneRoutes'); // Ajuste o caminho conforme necessário
+const carneRoutes = require('./routes/carneRoutes');
+const estoqueRoutes = require('./routes/estoque'); // Ajuste o caminho conforme necessário
 
 const app = express();
 app.use(cors());
@@ -11,6 +12,7 @@ app.use(express.json()); // Para analisar JSON no corpo das requisições
 // Integrar as rotas
 app.use('/api', gastosRoutes);
 app.use('/api', carneRoutes);
+app.use('/api', estoqueRoutes);
 
 
 
