@@ -32,6 +32,10 @@ const Estoque = sequelize.define('Estoque', {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  created_by: {
+    type: DataTypes.STRING,
+    allowNull: false, // Identifica quem criou o registro.
+  },
 });
 
 module.exports = Estoque;
