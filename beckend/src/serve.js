@@ -1,39 +1,41 @@
-// server.js
 const express = require('express');
+require('dotenv').config(); // Carrega variáveis de ambiente do arquivo .env
 const cors = require('cors');
-const dotenv = require('dotenv');
-const gastosRoutes = require('./routes/gastos');
-const carneRoutes = require('./routes/carneRoutes');
-const estoqueRoutes = require('./routes/estoque');
-const authRoutes = require('./routes/auth');
-const protectedRoutes = require('./routes/protectedRoutes');
-const authenticateUser = require('./middleware/authenticate'); // Middleware de autenticação
-
-dotenv.config(); // Carrega variáveis de ambiente do arquivo .env
+const routes = require('./routes');
 
 const app = express();
+
+// Middleware básico
 app.use(cors());
 app.use(express.json()); // Para analisar JSON no corpo das requisições
 
-// Rotas públicas (sem autenticação)
-app.use('/api/auth', authRoutes);
+// Verifica se o JWT_SECRET está configurado
+if (!process.env.JWT_SECRET) {
+  console.error('Erro: JWT_SECRET não está configurado no arquivo .env');
+  process.exit(1);
+}
 
-// Rotas protegidas (com autenticação)
-app.use('/api/gastos', authenticateUser, gastosRoutes);
-app.use('/api/carnes', authenticateUser, carneRoutes);
-app.use('/api/estoque', authenticateUser, estoqueRoutes);
-app.use('/api/protegido', authenticateUser, protectedRoutes);
+// Registra as rotas
+app.use('/api', routes);
 
 // Middleware de erro global
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Erro interno no servidor', error: err.message });
+  console.error('Erro capturado:', err.stack);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Erro interno no servidor',
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+  });
 });
 
-// Configurar a porta do servidor
+// Configura a porta
 const PORT = process.env.PORT || 3001;
 
-// Iniciar o servidor
+console.log('JWT Secret:', process.env.JWT_SECRET);
+
+// Inicia o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Modo: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`JWT Secret configurado: ${!!process.env.JWT_SECRET}`);
 });
